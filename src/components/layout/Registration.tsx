@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { postRegister } from '../../apis/functions';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 
@@ -58,14 +59,28 @@ export default function Registration({ setValue }: RegistrationProps) {
     const [chosenState, setChosenState] = useState<StateType | null>(null);
     const [chosenCity, setChosenCity] = useState<string | null>(null);
     const [userType, setUserType] = useState<'citizen' | 'Admin'>('citizen');
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [success, setSuccess] = useState(false);
 
     const handleCityChange = (city: string | null) => {
         setChosenCity(city);
     };
 
-    const handleRegister = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        setError(null);
+        setSuccess(false);
+
         const formData = new FormData(e.currentTarget as HTMLFormElement);
+        const password = formData.get('password') as string;
+        const confirmPassword = formData.get('confirmPassword') as string;
+
+        if (password !== confirmPassword) {
+            setError('Passwords do not match.');
+            return;
+        }
+
         const data = {
             firstName: formData.get('firstName') as string,
             lastName: formData.get('lastName') as string,
@@ -75,13 +90,25 @@ export default function Registration({ setValue }: RegistrationProps) {
             state: formData.get('state') as string,
             city: formData.get('city') as string,
             role: formData.get('role') as string,
+            password,
             // Returns the Aadhar number for citizens, Admin ID for admins
             ...(userType === 'Admin'
                 ? { adminId: formData.get('identifier') as string }
                 : { aadharNumber: formData.get('identifier') as string }),
         };
-        console.log('Form submitted', data);
-    }
+        console.log(data)
+        try {
+            setIsLoading(true);
+            await postRegister(data);
+            setSuccess(true);
+            setTimeout(() => setValue("2"), 1500); // Switch to Login tab after showing success message
+        } catch (err: any) {
+            const message = err?.response?.data?.message ?? err?.message ?? 'Registration failed. Please try again.';
+            setError(message);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
 
     // Dynamically render the matching custom state file dropdown
@@ -336,6 +363,7 @@ export default function Registration({ setValue }: RegistrationProps) {
                                 <input
                                     required
                                     id="password"
+                                    name="password"
                                     type="password"
                                     placeholder="Create a strong password"
                                     autoComplete="new-password"
@@ -350,6 +378,7 @@ export default function Registration({ setValue }: RegistrationProps) {
                                 <input
                                     required
                                     id="cpassword"
+                                    name="confirmPassword"
                                     type="password"
                                     placeholder="Confirm password"
                                     autoComplete="new-password"
@@ -358,9 +387,21 @@ export default function Registration({ setValue }: RegistrationProps) {
                         </div>
                     </div>
 
+                    {/* Error / Success feedback */}
+                    {error && (
+                        <p style={{ color: 'var(--color-error, #e53e3e)', fontSize: '0.85rem', margin: '0' }}>
+                            {error}
+                        </p>
+                    )}
+                    {success && (
+                        <p style={{ color: 'var(--color-success, #38a169)', fontSize: '0.85rem', margin: '0' }}>
+                            Registration successful! You can now log in.
+                        </p>
+                    )}
+
                     {/* Submit */}
-                    <button type="submit" className="primary-btn">
-                        Create Account
+                    <button type="submit" className="primary-btn" disabled={isLoading}>
+                        {isLoading ? 'Registering…' : 'Create Account'}
                     </button>
                 </form>
 

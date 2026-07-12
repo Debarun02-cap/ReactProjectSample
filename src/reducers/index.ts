@@ -1,8 +1,12 @@
 import { combineReducers } from 'redux';
-import authSlices from '../actions/auth.slice';
+import authReducer from './auth.reducer';
+import citizenReducer from './citizen.reducer';
+import adminReducer from './admin.reducer';
 
 const rootReducer = combineReducers({
-    auth: authSlices,
+    auth: authReducer,
+    citizen: citizenReducer,
+    admin: adminReducer,
 });
 
 export default rootReducer;

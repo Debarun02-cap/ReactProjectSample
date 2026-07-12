@@ -1,4 +1,4 @@
-export const BASE_URL = "http://localhost:3000";
+export const BASE_URL = ""; // Vite proxy forwards /auth, /user, /admin etc. to localhost:3000
 
 export class APIConstants {
     AUTH = {

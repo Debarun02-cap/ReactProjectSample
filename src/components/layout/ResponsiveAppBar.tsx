@@ -12,11 +12,28 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
+import { useSelector } from 'react-redux';
+import { useAppDispatch } from '../../store/store';
+import { logoutRequest } from '../../actions/auth.slice';
+import type { RootState } from '../../reducers';
 
-const pages = ['Products', 'Pricing', 'Blog'];
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
+const pages: string[] = [];
+interface ResponsiveAppBarProps {
+    onProfileClick?: () => void;
+    onDashboardClick?: () => void;
+    onUsageClick?: () => void;
+}
 
-function ResponsiveAppBar() {
+function ResponsiveAppBar({ onProfileClick, onDashboardClick, onUsageClick }: ResponsiveAppBarProps) {
+    const dispatch = useAppDispatch();
+    const { user } = useSelector((state: RootState) => state.auth);
+    const loginUserObj = user as any;
+    const role = loginUserObj?.user?.role || '';
+
+    const settings = role === 'superadmin' 
+        ? ['Profile', 'Useage', 'Dashboard', 'Logout']
+        : ['Profile', 'Dashboard', 'Logout'];
+
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
@@ -33,6 +50,31 @@ function ResponsiveAppBar() {
 
     const handleCloseUserMenu = () => {
         setAnchorElUser(null);
+    };
+
+    const handleSettingClick = (setting: string) => {
+        handleCloseUserMenu();
+        if (setting === 'Logout') {
+            dispatch(logoutRequest());
+        } else if (setting === 'Dashboard') {
+            if (onDashboardClick) {
+                onDashboardClick();
+            } else {
+                window.location.href = '/';
+            }
+        } else if (setting === 'Useage') {
+            if (onUsageClick) {
+                onUsageClick();
+            } else {
+                alert('Usage dashboard');
+            }
+        } else if (setting === 'Profile') {
+            if (onProfileClick) {
+                onProfileClick();
+            } else {
+                alert(`Profile of ${loginUserObj?.user?.name || 'User'}`);
+            }
+        }
     };
 
     return (
@@ -59,49 +101,53 @@ function ResponsiveAppBar() {
                     </Typography>
 
                     <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
-                        <IconButton
-                            aria-label="account of current user"
-                            aria-controls="menu-appbar"
-                            aria-haspopup="true"
-                            onClick={handleOpenNavMenu}
-                            color="inherit"
-                            sx={{ p: 1.5 }}
-                        >
-                            <MenuIcon sx={{ fontSize: "5rem" }} />
-                        </IconButton>
-                        <Menu
-                            id="menu-appbar"
-                            anchorEl={anchorElNav}
-                            anchorOrigin={{
-                                vertical: 'bottom',
-                                horizontal: 'left',
-                            }}
-                            keepMounted
-                            transformOrigin={{
-                                vertical: 'top',
-                                horizontal: 'left',
-                            }}
-                            open={Boolean(anchorElNav)}
-                            onClose={handleCloseNavMenu}
-                            sx={{ display: { xs: 'block', md: 'none' } }}
-                        >
-                            {pages.map((page) => (
-                                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                                    <Typography
-                                        sx={{
-                                            textAlign: 'center',
-                                            fontFamily: 'monospace',
-                                            fontWeight: 700,
-                                            fontSize: '1.2rem',
-                                            letterSpacing: '.1rem',
-                                            width: '100%',
-                                        }}
-                                    >
-                                        {page}
-                                    </Typography>
-                                </MenuItem>
-                            ))}
-                        </Menu>
+                        {pages.length > 0 && (
+                            <>
+                                <IconButton
+                                    aria-label="account of current user"
+                                    aria-controls="menu-appbar"
+                                    aria-haspopup="true"
+                                    onClick={handleOpenNavMenu}
+                                    color="inherit"
+                                    sx={{ p: 1.5 }}
+                                >
+                                    <MenuIcon sx={{ fontSize: "5rem" }} />
+                                </IconButton>
+                                <Menu
+                                    id="menu-appbar"
+                                    anchorEl={anchorElNav}
+                                    anchorOrigin={{
+                                        vertical: 'bottom',
+                                        horizontal: 'left',
+                                    }}
+                                    keepMounted
+                                    transformOrigin={{
+                                        vertical: 'top',
+                                        horizontal: 'left',
+                                    }}
+                                    open={Boolean(anchorElNav)}
+                                    onClose={handleCloseNavMenu}
+                                    sx={{ display: { xs: 'block', md: 'none' } }}
+                                >
+                                    {pages.map((page) => (
+                                        <MenuItem key={page} onClick={handleCloseNavMenu}>
+                                            <Typography
+                                                sx={{
+                                                    textAlign: 'center',
+                                                    fontFamily: 'monospace',
+                                                    fontWeight: 700,
+                                                    fontSize: '1.2rem',
+                                                    letterSpacing: '.1rem',
+                                                    width: '100%',
+                                                }}
+                                            >
+                                                {page}
+                                            </Typography>
+                                        </MenuItem>
+                                    ))}
+                                </Menu>
+                            </>
+                        )}
                     </Box>
                     <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
                     <Typography
@@ -141,46 +187,49 @@ function ResponsiveAppBar() {
                             </Button>
                         ))}
                     </Box>
-                    <Box sx={{ flexGrow: 0 }}>
-                        <Tooltip title="Open settings">
-                            <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
-                            </IconButton>
-                        </Tooltip>
-                        <Menu
-                            sx={{ mt: '45px' }}
-                            id="menu-appbar"
-                            anchorEl={anchorElUser}
-                            anchorOrigin={{
-                                vertical: 'top',
-                                horizontal: 'right',
-                            }}
-                            keepMounted
-                            transformOrigin={{
-                                vertical: 'top',
-                                horizontal: 'right',
-                            }}
-                            open={Boolean(anchorElUser)}
-                            onClose={handleCloseUserMenu}
-                        >
-                            {settings.map((setting) => (
-                                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                                    <Typography
-                                        sx={{
-                                            textAlign: 'center',
-                                            fontFamily: 'monospace',
-                                            fontWeight: 700,
-                                            fontSize: '1rem',
-                                            letterSpacing: '.05rem',
-                                            width: '100%',
-                                        }}
-                                    >
-                                        {setting}
-                                    </Typography>
-                                </MenuItem>
-                            ))}
-                        </Menu>
-                    </Box>
+
+                    {loginUserObj && (
+                        <Box sx={{ flexGrow: 0 }}>
+                            <Tooltip title="Open settings">
+                                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                                    <Avatar alt={loginUserObj?.user?.name || 'User'} src="/static/images/avatar/2.jpg" />
+                                </IconButton>
+                            </Tooltip>
+                            <Menu
+                                sx={{ mt: '45px' }}
+                                id="menu-appbar"
+                                anchorEl={anchorElUser}
+                                anchorOrigin={{
+                                    vertical: 'top',
+                                    horizontal: 'right',
+                                }}
+                                keepMounted
+                                transformOrigin={{
+                                    vertical: 'top',
+                                    horizontal: 'right',
+                                }}
+                                open={Boolean(anchorElUser)}
+                                onClose={handleCloseUserMenu}
+                            >
+                                {settings.map((setting) => (
+                                    <MenuItem key={setting} onClick={() => handleSettingClick(setting)}>
+                                        <Typography
+                                            sx={{
+                                                textAlign: 'center',
+                                                fontFamily: 'monospace',
+                                                fontWeight: 700,
+                                                fontSize: '1rem',
+                                                letterSpacing: '.05rem',
+                                                width: '100%',
+                                            }}
+                                        >
+                                            {setting}
+                                        </Typography>
+                                    </MenuItem>
+                                ))}
+                            </Menu>
+                        </Box>
+                    )}
                 </Toolbar>
             </Container>
         </AppBar >
