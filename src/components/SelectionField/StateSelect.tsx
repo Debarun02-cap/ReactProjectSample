@@ -28,14 +28,40 @@ export default function StateSelect({ onStateChange }: StateSelectProps) {
                     {...params}
                     label="Select State or UT"
                     variant="outlined"
+                    placeholder="Search state or UT..."
                     required
                 />
             )}
             renderOption={(props, option) => {
                 const { key, ...optionProps } = props;
                 return (
-                    <li key={key} {...optionProps} style={{ fontSize: '0.9rem' }}>
-                        {option.label} ({option.code.replace('IN-', '')})
+                    <li
+                        key={key}
+                        {...optionProps}
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            gap: '0.75rem',
+                            fontSize: '0.9rem',
+                        }}
+                    >
+                        <span style={{ color: '#0f172a', fontWeight: 500 }}>{option.label}</span>
+                        <span
+                            style={{
+                                fontFamily: "'JetBrains Mono', ui-monospace, monospace",
+                                fontSize: '0.72rem',
+                                fontWeight: 600,
+                                color: '#0f766e',
+                                background: 'rgba(15, 118, 110, 0.08)',
+                                borderRadius: '6px',
+                                padding: '2px 7px',
+                                letterSpacing: '0.02em',
+                                flexShrink: 0,
+                            }}
+                        >
+                            {option.code.replace('IN-', '')}
+                        </span>
                     </li>
                 );
             }}

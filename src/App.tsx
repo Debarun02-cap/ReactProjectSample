@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
+import { Box } from '@mui/material';
 import ResponsiveAppBar from './components/layout/ResponsiveAppBar';
 import TabGroup from './components/layout/TabGroup';
 import UserHome from './components/layout/userHome';
@@ -47,30 +48,51 @@ function App() {
 
     return (
         <>
-            <ResponsiveAppBar 
-                onProfileClick={() => setProfileOpen(true)} 
-                onDashboardClick={() => setView('home')} 
+            <ResponsiveAppBar
+                onProfileClick={() => setProfileOpen(true)}
+                onDashboardClick={() => setView('home')}
                 onUsageClick={() => setView('usage')}
             />
-            {role === 'citizen' ? (
-                <>
-                    {view === 'home' && (
-                        <UserHome onRegisterClick={() => setView('register-complaint')} />
-                    )}
-                    {view === 'register-complaint' && (
-                        <ComplaintRegister onCancel={() => setView('home')} />
-                    )}
-                </>
-            ) : role === 'admin' ? (
-                <AdminHome />
-            ) : role === 'superadmin' ? (
-                <>
-                    {view === 'home' && <AdminHome />}
-                    {view === 'usage' && <Useage />}
-                </>
-            ) : (
-                <TabGroup />
-            )}
+            <Box
+                component="main"
+                key={`${role}-${view}`}
+                sx={{
+                    minHeight: 'calc(100vh - 72px)',
+                    backgroundColor: '#e6eef0',
+                    backgroundImage:
+                        'radial-gradient(rgba(15,118,110,0.06) 1px, transparent 1px),' +
+                        'radial-gradient(1100px 720px at 88% -10%, rgba(20,184,166,0.20), transparent 60%),' +
+                        'radial-gradient(1000px 640px at -8% 112%, rgba(37,99,235,0.15), transparent 58%),' +
+                        'radial-gradient(760px 520px at 50% 128%, rgba(15,118,110,0.12), transparent 62%)',
+                    backgroundSize: '22px 22px, 100% 100%, 100% 100%, 100% 100%',
+                    backgroundAttachment: 'fixed, fixed, fixed, fixed',
+                    animation: 'fmcViewFade 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
+                    '@keyframes fmcViewFade': {
+                        from: { opacity: 0, transform: 'translateY(6px)' },
+                        to: { opacity: 1, transform: 'translateY(0)' },
+                    },
+                }}
+            >
+                {role === 'citizen' ? (
+                    <>
+                        {view === 'home' && (
+                            <UserHome onRegisterClick={() => setView('register-complaint')} />
+                        )}
+                        {view === 'register-complaint' && (
+                            <ComplaintRegister onCancel={() => setView('home')} />
+                        )}
+                    </>
+                ) : role === 'admin' ? (
+                    <AdminHome />
+                ) : role === 'superadmin' ? (
+                    <>
+                        {view === 'home' && <AdminHome />}
+                        {view === 'usage' && <Useage />}
+                    </>
+                ) : (
+                    <TabGroup />
+                )}
+            </Box>
 
             {/* Profile Modal — rendered as an overlay on top of any view */}
             <Profile open={profileOpen} onClose={() => setProfileOpen(false)} />

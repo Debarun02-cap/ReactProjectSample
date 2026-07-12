@@ -193,11 +193,15 @@ export default function Useage() {
     const maxVal = stats ? Math.max(stats.registered, stats.pending, stats.progress, stats.completed, 1) : 1;
 
     return (
-        <Box sx={{ 
-            py: 4, 
-            minHeight: 'calc(100vh - 100px)', 
-            backgroundImage: `linear-gradient(rgba(248, 250, 252, 0.85), rgba(241, 245, 249, 0.9)), url(${bgImage})`,
-            backgroundSize: 'cover',
+        <Box sx={{
+            py: 4,
+            minHeight: 'calc(100vh - 100px)',
+            backgroundColor: '#e6eef0',
+            backgroundImage:
+                'radial-gradient(rgba(15,118,110,0.06) 1px, transparent 1px),' +
+                'radial-gradient(1100px 720px at 88% -8%, rgba(20,184,166,0.22), transparent 60%),' +
+                'radial-gradient(1000px 640px at -8% 112%, rgba(37,99,235,0.16), transparent 58%)',
+            backgroundSize: '22px 22px, 100% 100%, 100% 100%',
             backgroundPosition: 'center',
             backgroundAttachment: 'fixed',
             backgroundRepeat: 'no-repeat'

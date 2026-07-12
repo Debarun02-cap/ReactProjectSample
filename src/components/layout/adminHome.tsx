@@ -129,11 +129,12 @@ export default function AdminHome() {
                 content: '""',
                 position: 'absolute',
                 inset: 0,
-                backgroundImage: `url(${backgroundImage})`,
-                backgroundSize: 'cover',
-                backgroundRepeat: 'no-repeat',
-                backgroundPosition: 'center',
-                filter: 'blur(100px)',
+                backgroundColor: '#e6eef0',
+                backgroundImage:
+                    'radial-gradient(rgba(15,118,110,0.06) 1px, transparent 1px),' +
+                    'radial-gradient(1100px 720px at 88% -8%, rgba(20,184,166,0.22), transparent 60%),' +
+                    'radial-gradient(1000px 640px at -8% 112%, rgba(37,99,235,0.16), transparent 58%)',
+                backgroundSize: '22px 22px, 100% 100%, 100% 100%',
                 pointerEvents: 'none',
                 zIndex: -1,
             }
