@@ -142,10 +142,10 @@ export default function AdminHome() {
             {/* Header section */}
             <Box sx={{ mb: 4 }}>
                     <Typography variant="h4" sx={{ fontWeight: 700, color: '#1e293b' }}>
-                        Admin Control Panel
+                        {role === 'superadmin' ? 'SuperAdmin Control Panel' : 'Admin Control Panel'}
                     </Typography>
                 <Typography variant="subtitle1" color="#64748b">
-                    Welcome back, {loginUserObj?.user?.name || 'Admin'}! Manage complaints, view photos, and update work status.
+                    Welcome back, {loginUserObj?.user?.name || (role === 'superadmin' ? 'SuperAdmin' : 'Admin')}! Manage complaints, view photos, and update work status.
                 </Typography>
             </Box>
 
